@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #93b1b5, #b8e3e9);
+            color: white;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 90%;
+            max-width: 400px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 9px 15px rgba(0, 0, 0, 0.3);
+            margin: 50px auto;
+            color: black;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #4f7c82;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #0b2e33;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .progress-container {
+            width: 100%;
+            background: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+            height: 25px;
+        }
+        .progress-bar {
+            height: 25px;
+            background: linear-gradient(90deg, #f50206, #48f802);
+            width: 0;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+            line-height: 25px;
+            transition: width 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Attendance Calculator</h2>
+        <label for="total">Total Classes Conducted per subject in overall semester:</label>
+        <input type="number" id="total" placeholder="Enter total classes">
+        <label for="attended">Classes Attended till now:</label>
+        <input type="number" id="attended" placeholder="Enter attended classes">
+        <button onclick="calculateAttendance()">Calculate</button>
+        <p class="result" id="result"></p>
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar">0%</div>
+        </div>
+        <p id="suggestion"></p>
+        <p id="safe-bunks"></p>
+        <p id="recovery-strategy"></p>
+        <p id="final-projection"></p>
+    </div>
+
+    <script>
+        function calculateAttendance() {
+            let total = parseInt(document.getElementById("total").value);
+            let attended = parseInt(document.getElementById("attended").value);
+            let result = document.getElementById("result");
+            let suggestion = document.getElementById("suggestion");
+            let safeBunks = document.getElementById("safe-bunks");
+            let recoveryStrategy = document.getElementById("recovery-strategy");
+            let finalProjection = document.getElementById("final-projection");
+            let progressBar = document.getElementById("progress-bar");
+
+            if (isNaN(total) || isNaN(attended) || total <= 0 || attended < 0 || attended > total) {
+                result.innerHTML = "Please enter valid values!";
+                result.style.color = "red";
+                return;
+            }
+
+            let percentage = (attended / total) * 100;
+            progressBar.style.width = percentage + "%";
+            progressBar.innerHTML = percentage.toFixed(2) + "%";
+            
+            if (percentage >= 75) {
+                result.innerHTML = `Attendance: ${percentage.toFixed(2)}% ✅ Bunk kottu mawa parledhu 🫡!`;
+                result.style.color = "green";
+                suggestion.innerHTML = "";
+            } else if (percentage >= 65) {
+                result.innerHTML = `Attendance: ${percentage.toFixed(2)}% ⚠️ Thappadhu mawa condonation kattali 😑!`;
+                result.style.color = "orange";
+                suggestion.innerHTML = `Attend ${Math.ceil((0.75 * total - attended))} more classes to reach 75%.`;
+            } else {
+                result.innerHTML = `Attendance: ${percentage.toFixed(2)}% ❌ Kastapadav kaani detain aipoyav mawa 😢!`;
+                result.style.color = "red";
+                suggestion.innerHTML = `Attend ${Math.ceil((0.75 * total - attended))} more classes to reach 75%.`;
+            }
+            
+            let maxBunks = Math.floor((attended - (0.75 * total)) / 1);
+            safeBunks.innerHTML = maxBunks >= 0 ? `You can safely bunk ${maxBunks} more classes without failing below 75%.` : "";
+            
+            if (percentage < 75) {
+                let neededClasses = Math.ceil(0.75 * total - attended);
+                recoveryStrategy.innerHTML = `To recover, attend at least ${neededClasses} more classes without missing any.`;
+            } else {
+                recoveryStrategy.innerHTML = "";
+            }
+
+            let futureTotal = total + 10;
+            let futureAttended = attended + 10;
+            let futurePercentage = (futureAttended / futureTotal) * 100;
+            finalProjection.innerHTML = `If you attend the next 10 classes, your attendance will be approximately ${futurePercentage.toFixed(2)}%.`;
+        }
+    </script>
+</body>
+</html>
